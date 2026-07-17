@@ -615,9 +615,7 @@ footer{
     <span class="marquee-item">CrewAI <span>·</span></span>
     <span class="marquee-item">AutoGen <span>·</span></span>
     <span class="marquee-item">JWT auth <span>·</span></span>
-    <span class="marquee-item">ClickHouse <span>·</span></span>
-    <span class="marquee-item">Redis Streams <span>·</span></span>
-    <span class="marquee-item">zero-interference guarantee <span>·</span></span>
+            <span class="marquee-item">zero-interference guarantee <span>·</span></span>
     <span class="marquee-item">open source <span>·</span></span>
     <span class="marquee-item">self-hostable <span>·</span></span>
     <span class="marquee-item">Apache 2.0 <span>·</span></span>
@@ -632,9 +630,7 @@ footer{
     <span class="marquee-item">CrewAI <span>·</span></span>
     <span class="marquee-item">AutoGen <span>·</span></span>
     <span class="marquee-item">JWT auth <span>·</span></span>
-    <span class="marquee-item">ClickHouse <span>·</span></span>
-    <span class="marquee-item">Redis Streams <span>·</span></span>
-    <span class="marquee-item">zero-interference guarantee <span>·</span></span>
+            <span class="marquee-item">zero-interference guarantee <span>·</span></span>
     <span class="marquee-item">open source <span>·</span></span>
     <span class="marquee-item">self-hostable <span>·</span></span>
     <span class="marquee-item">Apache 2.0 <span>·</span></span>
@@ -727,7 +723,7 @@ footer{
         <span class="feat-icon" aria-hidden="true">⚡</span>
         <div class="feat-title">Offline Resilience</div>
         <div class="feat-stat">zero data loss</div>
-        <p class="feat-desc">If the collector is unreachable, spans are written to a local SQLite buffer and replayed automatically when connectivity is restored.</p>
+        <p class="feat-desc">If the Oxly Engine is unreachable, spans are written to a local SQLite buffer and replayed automatically when connectivity is restored.</p>
       </div>
 
     </div>
@@ -752,13 +748,12 @@ footer{
       <div class="term-body">
         <button class="copy-btn" onclick="copyPane()" aria-label="Copy code">Copy</button>
 
-        <div class="term-pane active" id="qs-0"><span class="cm"># Install the AgentStack SDK</span>
-pip install agentstate-sdk</div>
+        <div class="term-pane active" id="qs-0"><span class="cm"># Install the Oxly SDK</span>
+pip install oxly</div>
 
-        <div class="term-pane" id="qs-1"><span class="kw">from</span> agentstack <span class="kw">import</span> observe, init
+        <div class="term-pane" id="qs-1"><span class="kw">from</span> oxly <span class="kw">import</span> observe, init
 
 <span class="fn">init</span>(
-    collector_url=<span class="str">"https://your-collector.example.com"</span>,
     api_key=<span class="str">"ak_your_project_key"</span>,
 )
 
@@ -789,7 +784,7 @@ pip install agentstate-sdk</div>
 <!-- ── COMPARISON ────────────────────────────────────────────── -->
 <section id="comparison" aria-labelledby="comp-heading">
   <div class="container fi">
-    <span class="label">§ 04 · Why AgentStack</span>
+    <span class="label">§ 04 · Why Oxly</span>
     <h2 class="section-h2-sm" id="comp-heading">
       Tokens are a resource.<br>Most observability tools ignore that.
     </h2>
@@ -803,7 +798,7 @@ pip install agentstate-sdk</div>
             <th>Challenge</th>
             <th>Web Services</th>
             <th>AI Agents</th>
-            <th>AgentStack</th>
+            <th>Oxly</th>
           </tr>
         </thead>
         <tbody id="comp-body">
@@ -835,7 +830,7 @@ pip install agentstate-sdk</div>
       </div>
       <div class="arch-popup open" id="ap-0">
         <h4>sdk-python</h4>
-        <p>Python 3.10+, Pydantic v2. Provides the @observe decorator, local SQLite buffer for offline resilience, automatic PII scrubbing, span batching, and gzip compression before sending to the Collector.</p>
+        <p>Python 3.10+, Pydantic v2. Provides the @observe decorator, local SQLite buffer for offline resilience, automatic PII scrubbing, span batching, and gzip compression.</p>
       </div>
 
       <div class="arch-connector"><div class="arch-dot"></div></div>
@@ -843,13 +838,13 @@ pip install agentstate-sdk</div>
       <div class="arch-layer" role="listitem" onclick="archClick(1)" tabindex="0" aria-expanded="false">
         <span class="arch-num">L2</span>
         <div>
-          <div class="arch-title">Collector (FastAPI · Port 4318)</div>
-          <div class="arch-sub">Validates API keys · enforces limits · writes to Redis Streams</div>
+          <div class="arch-title">API Server (FastAPI)</div>
+          <div class="arch-sub">REST + WebSocket + JWT auth</div>
         </div>
       </div>
       <div class="arch-popup" id="ap-1">
-        <h4>collector</h4>
-        <p>FastAPI, Redis 7. Receives spans via HTTP POST. Authenticates via SHA-256 API key lookup, enforces 5MB body limits and 100 req/min rate limiting, then publishes to the spans.ingest Redis Stream.</p>
+        <h4>api</h4>
+        <p>FastAPI, SQLite (user store). Exposes REST endpoints for trace queries and a WebSocket channel for live span streaming to the dashboard. JWT tokens with 24h expiry; pbkdf2_sha256 password hashing; brute-force lockout after 5 failures.</p>
       </div>
 
       <div class="arch-connector"><div class="arch-dot" style="animation-delay:.6s"></div></div>
@@ -857,53 +852,11 @@ pip install agentstate-sdk</div>
       <div class="arch-layer" role="listitem" onclick="archClick(2)" tabindex="0" aria-expanded="false">
         <span class="arch-num">L3</span>
         <div>
-          <div class="arch-title">Parallel Workers</div>
-          <div class="arch-sub">[ClickHouse Writer] · [Security Engine] · [Cost Calculator]</div>
-        </div>
-      </div>
-      <div class="arch-popup" id="ap-2">
-        <h4>workers</h4>
-        <p>Python, Redis Streams. Three independent consumer groups process spans concurrently. Each worker has its own offset so they don't block each other. Security Engine runs regex + heuristic checks; Cost Calculator looks up token prices per model.</p>
-      </div>
-
-      <div class="arch-connector"><div class="arch-dot" style="animation-delay:1.2s"></div></div>
-
-      <div class="arch-layer" role="listitem" onclick="archClick(3)" tabindex="0" aria-expanded="false">
-        <span class="arch-num">L4</span>
-        <div>
-          <div class="arch-title">ClickHouse</div>
-          <div class="arch-sub">spans · security_alerts · cost_metrics</div>
-        </div>
-      </div>
-      <div class="arch-popup" id="ap-3">
-        <h4>ClickHouse 24.3</h4>
-        <p>Columnar OLAP database. Three MergeTree tables store spans, security alerts, and cost metrics. Optimized for time-range queries, aggregations, and the Time Machine trace replay — returning billions of rows in sub-second response times.</p>
-      </div>
-
-      <div class="arch-connector"><div class="arch-dot" style="animation-delay:1.8s"></div></div>
-
-      <div class="arch-layer" role="listitem" onclick="archClick(4)" tabindex="0" aria-expanded="false">
-        <span class="arch-num">L5</span>
-        <div>
-          <div class="arch-title">API Server (FastAPI)</div>
-          <div class="arch-sub">REST + WebSocket + JWT auth</div>
-        </div>
-      </div>
-      <div class="arch-popup" id="ap-4">
-        <h4>api</h4>
-        <p>FastAPI, SQLite (user store), ClickHouse. Exposes REST endpoints for trace queries and a WebSocket channel for live span streaming to the dashboard. JWT tokens with 24h expiry; pbkdf2_sha256 password hashing; brute-force lockout after 5 failures.</p>
-      </div>
-
-      <div class="arch-connector"><div class="arch-dot" style="animation-delay:2.4s"></div></div>
-
-      <div class="arch-layer" role="listitem" onclick="archClick(5)" tabindex="0" aria-expanded="false">
-        <span class="arch-num">L6</span>
-        <div>
           <div class="arch-title">Dashboard (React 19 + TypeScript)</div>
           <div class="arch-sub">Traces · Analytics · Security · Time Machine</div>
         </div>
       </div>
-      <div class="arch-popup" id="ap-5">
+      <div class="arch-popup" id="ap-2">
         <h4>dashboard</h4>
         <p>React 19, TypeScript, Vite. Live trace tree explorer, time-series cost charts, real-time security alert feed, and the Time Machine UI — which lets you scrub backward through any past agent run span-by-span with full input/output data at every step.</p>
       </div>
@@ -918,11 +871,9 @@ pip install agentstate-sdk</div>
       </thead>
       <tbody>
         <tr><td>sdk-python</td><td>Python 3.10+, Pydantic v2</td><td>@observe decorator, PII scrubber, batching, offline buffer</td></tr>
-        <tr><td>collector</td><td>FastAPI, Redis 7</td><td>Ingestion · validates · authenticates · streams spans</td></tr>
-        <tr><td>workers</td><td>Python, Redis Streams</td><td>ClickHouse writer · security engine · cost calculator</td></tr>
-        <tr><td>api</td><td>FastAPI, SQLite, ClickHouse</td><td>REST API · WebSocket · JWT auth · trace replay</td></tr>
+                        <tr><td>api</td><td>FastAPI, SQLite</td><td>REST API · WebSocket · JWT auth · trace replay</td></tr>
         <tr><td>dashboard</td><td>React 19, TypeScript, Vite</td><td>Traces · analytics · Time Machine · security alerts</td></tr>
-        <tr><td>deploy</td><td>Redis 7, ClickHouse 24.3</td><td>Docker Compose · health checks · Nginx reverse proxy</td></tr>
+        <tr><td>deploy</td><td>SQLite</td><td>Single-process deployment</td></tr>
       </tbody>
     </table>
   </div>
@@ -953,11 +904,11 @@ pip install agentstate-sdk</div>
       </div>
       <div class="sec-card" role="listitem">
         <div class="sec-head"><span aria-hidden="true">⚡</span> Rate Limiting</div>
-        <p class="sec-body">100 requests per minute per IP enforced at the Collector level via Redis counters.</p>
+        <p class="sec-body">100 requests per minute per IP enforced in-process.</p>
       </div>
       <div class="sec-card" role="listitem">
         <div class="sec-head"><span aria-hidden="true">🌐</span> CORS Allowlist</div>
-        <p class="sec-body">Explicit origin allowlist. Credentials disabled on the Collector endpoint. No wildcard origins.</p>
+        <p class="sec-body">Explicit origin allowlist. Credentials disabled on the API endpoint. No wildcard origins.</p>
       </div>
       <div class="sec-card" role="listitem">
         <div class="sec-head"><span aria-hidden="true">📦</span> Payload Limits</div>
@@ -1001,11 +952,10 @@ pip install agentstate-sdk</div>
               <span class="term-lang">python</span>
             </div>
             <div class="term-body">
-              <div class="code-output"><span class="cm"># Point the SDK at your collector</span>
-<span class="kw">from</span> agentstack <span class="kw">import</span> init
+              <div class="code-output"><span class="cm"># Initialize Oxly</span>
+<span class="kw">from</span> oxly <span class="kw">import</span> init
 
 <span class="fn">init</span>(
-    collector_url=<span class="str">"https://collector.yourdomain.com"</span>,
     api_key=<span class="str">"ak_your_key"</span>,
 )</div>
             </div>
@@ -1015,14 +965,12 @@ pip install agentstate-sdk</div>
 
       <div>
         <p class="section-body">
-          The full stack runs in 8 Docker containers. Clone the repo, copy the example env file, and bring it up with a single Compose command.
+          The full stack runs as a single process. Clone the repo, copy the example env file, and start it directly.
         </p>
         <p class="env-label">Environment variables</p>
         <table class="env-table" aria-label="Environment variables">
           <tbody>
-            <tr><td>SECRET_KEY</td><td>JWT signing secret — <code>openssl rand -hex 32</code></td></tr>
-            <tr><td>REDIS_PASSWORD</td><td>Redis auth password</td></tr>
-            <tr><td>CLICKHOUSE_PASSWORD</td><td>ClickHouse DB password</td></tr>
+            <tr><td>JWT_SECRET_KEY</td><td>JWT signing secret — <code>openssl rand -hex 32</code></td></tr>
             <tr><td>ALLOWED_ORIGINS</td><td>Comma-separated CORS origins for the API</td></tr>
           </tbody>
         </table>
@@ -1044,8 +992,8 @@ pip install agentstate-sdk</div>
           <div class="stat-label">Open source license</div>
         </div>
         <div class="stat-item">
-          <div class="stat-val"><span class="stat-num" data-target="8" data-suffix="">0</span></div>
-          <div class="stat-label">Docker containers</div>
+          <div class="stat-val"><span class="stat-num" data-target="1" data-suffix="">0</span></div>
+          <div class="stat-label">Single process</div>
         </div>
         <div class="stat-item">
           <div class="stat-val"><span class="stat-suf">0</span></div>
@@ -1062,16 +1010,16 @@ pip install agentstate-sdk</div>
       </div>
 
       <div class="repo-card">
-        <div class="repo-card-title">Ramakrishna1967 / AgentStack</div>
+        <div class="repo-card-title">Ramakrishna1967 / Oxly</div>
         <p class="repo-card-desc">
-          "AgentStack is an open-source observability platform for AI agents — providing real-time tracing, offline storage, cost tracking, security analysis, and step-by-step Time Machine replay."
+          "Oxly is an open-source observability platform for AI agents — a single high-performance process for real-time tracing, offline SQLite storage, cost tracking, and security analysis."
         </p>
         <div class="repo-card-meta">
           <span class="lang-dot py">Python 65.8%</span>
           <span class="lang-dot ts">TypeScript 31.0%</span>
           <span class="lang-dot li">Apache 2.0</span>
         </div>
-        <a href="https://github.com/Ramakrishna1967/AgentStack" target="_blank" rel="noopener noreferrer" class="btn" style="align-self:flex-start;margin-top:.5rem" aria-label="Star AgentStack on GitHub">
+        <a href="https://github.com/Ramakrishna1967/Oxly" target="_blank" rel="noopener noreferrer" class="btn" style="align-self:flex-start;margin-top:.5rem" aria-label="Star Oxly on GitHub">
           ★ Star on GitHub ↗
         </a>
       </div>
@@ -1089,13 +1037,13 @@ pip install agentstate-sdk</div>
     </p>
     <div class="cta-thesis">why ship blind when you can trace every step.</div>
     <div class="cta-btns">
-      <button class="btn btn-lg" onclick="copy('pip install agentstate-sdk')" aria-label="Copy pip install command">
-        pip install agentstate-sdk
+      <button class="btn btn-lg" onclick="copy('pip install oxly')" aria-label="Copy pip install command">
+        pip install oxly
       </button>
-      <a href="https://github.com/Ramakrishna1967/AgentStack" target="_blank" rel="noopener noreferrer" class="btn btn-lg">
+      <a href="https://github.com/Ramakrishna1967/Oxly" target="_blank" rel="noopener noreferrer" class="btn btn-lg">
         Star on GitHub ↗
       </a>
-      <a href="https://github.com/Ramakrishna1967/AgentStack/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="btn btn-lg">Read the docs ↗</a>
+      <a href="https://github.com/Ramakrishna1967/Oxly/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="btn btn-lg">Read the docs ↗</a>
     </div>
   </div>
 </section>
@@ -1103,13 +1051,13 @@ pip install agentstate-sdk</div>
 <!-- ── FOOTER ─────────────────────────────────────────────────── -->
 <footer role="contentinfo">
   <div class="container footer-inner">
-    <div>AGENTSTACK · Apache 2.0 · 2026</div>
+    <div>OXLY · Apache 2.0 · 2026</div>
     <div class="footer-tagline">why ship blind when you can trace every step.</div>
     <nav class="footer-links" aria-label="Footer links">
-      <a href="https://github.com/Ramakrishna1967/AgentStack" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="https://github.com/Ramakrishna1967/AgentStack/issues" target="_blank" rel="noopener noreferrer">Issues</a>
-      <a href="https://github.com/Ramakrishna1967/AgentStack/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a>
-      <a href="https://github.com/Ramakrishna1967/AgentStack/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
+      <a href="https://github.com/Ramakrishna1967/Oxly" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://github.com/Ramakrishna1967/Oxly/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+      <a href="https://github.com/Ramakrishna1967/Oxly/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">Contributing</a>
+      <a href="https://github.com/Ramakrishna1967/Oxly/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
     </nav>
   </div>
 </footer>
@@ -1150,10 +1098,10 @@ function copyPane() {
 }
 
 function copyDeploy() {
-  copy(`git clone https://github.com/ramakrishna1967/AgentStack
-cd agentstack
+  copy(`git clone https://github.com/ramakrishna1967/oxly
+cd oxly
 cp .env.example .env
-docker compose up -d`);
+python -m oxly`);
 }
 
 /* ─── Nav scroll + active link (single listener) ───────────── */
@@ -1292,23 +1240,17 @@ if (statsGrid) statsObs.observe(statsGrid);
 
 /* ─── Deploy terminal typewriter ────────────────────────────── */
 const deployLines = [
-  { text: '$ git clone https://github.com/ramakrishna1967/AgentStack', color: '#abb2bf', delay: 600 },
-  { text: '$ cd agentstack', color: '#abb2bf', delay: 600 },
+  { text: '$ git clone https://github.com/ramakrishna1967/oxly', color: '#abb2bf', delay: 600 },
+  { text: '$ cd oxly', color: '#abb2bf', delay: 600 },
   { text: '$ cp .env.example .env', color: '#abb2bf', delay: 600 },
-  { text: '$ docker compose up -d', color: '#abb2bf', delay: 700 },
+  { text: '$ python -m oxly', color: '#abb2bf', delay: 700 },
   { text: '', color: '', delay: 200 },
-  { text: '✓ redis            started · healthy', color: '#4ade80', delay: 150 },
-  { text: '✓ clickhouse       started · healthy', color: '#4ade80', delay: 150 },
-  { text: '✓ collector        started · port 4318', color: '#4ade80', delay: 150 },
+  { text: '✓ oxly Engine      starting... 1 process', color: '#4ade80', delay: 150 },
   { text: '✓ api              started · port 8000', color: '#4ade80', delay: 150 },
-  { text: '✓ worker-write     started', color: '#4ade80', delay: 150 },
-  { text: '✓ worker-security  started', color: '#4ade80', delay: 150 },
-  { text: '✓ worker-cost      started', color: '#4ade80', delay: 150 },
   { text: '✓ dashboard        started · port 3000', color: '#4ade80', delay: 150 },
   { text: '', color: '', delay: 200 },
-  { text: '→ stack ready · 8 containers · all healthy', color: '#61afef', delay: 100 },
-  { text: '→ dashboard at http://localhost:3000', color: '#61afef', delay: 100 },
-];
+  { text: '→ stack ready · 1 process · all healthy', color: '#61afef', delay: 100 },
+  { text: '→ dashboard at http://localhost:3000', color: '#61afef', delay: 100 }];
 
 let deployDone = false;
 function runDeployTerminal() {
