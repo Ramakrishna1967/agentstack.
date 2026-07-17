@@ -215,7 +215,7 @@ section:not(#nav):not(#marquee){padding:5.5rem 0}
 
 /* ─── Ecosystem ──────────────────────────────────────────────── */
 .eco-pipeline{
-  display:grid;grid-template-columns:repeat(4,1fr);
+  display:grid;grid-template-columns:repeat(3,1fr);
   gap:0;position:relative;margin-bottom:2rem;
 }
 .eco-step{
@@ -595,7 +595,7 @@ footer{
         <div class="live-bar-item" role="listitem">2 stars</div>
         <div class="live-bar-item" role="listitem">Apache 2.0</div>
         <div class="live-bar-item" role="listitem">Python 3.10+</div>
-        <div class="live-bar-item" role="listitem">8 containers</div>
+        <div class="live-bar-item" role="listitem">1 process</div>
         <div class="live-bar-item" role="listitem">0 data loss</div>
       </div>
     </div>
@@ -654,18 +654,12 @@ footer{
       </div>
       <div class="eco-step" role="tab" aria-selected="false" aria-controls="eco-detail" onclick="ecoClick(1)" tabindex="0">
         <span class="eco-step-num">02</span>
-        <div class="eco-step-name">Collector</div>
-        <div class="eco-step-sub">FastAPI · validates · streams</div>
+        <div class="eco-step-name">Oxly Engine</div>
+        <div class="eco-step-sub">FastAPI · SQLite · Security</div>
         <span class="eco-arrow">→</span>
       </div>
       <div class="eco-step" role="tab" aria-selected="false" aria-controls="eco-detail" onclick="ecoClick(2)" tabindex="0">
         <span class="eco-step-num">03</span>
-        <div class="eco-step-name">Workers</div>
-        <div class="eco-step-sub">ClickHouse · Security · Cost</div>
-        <span class="eco-arrow">→</span>
-      </div>
-      <div class="eco-step" role="tab" aria-selected="false" aria-controls="eco-detail" onclick="ecoClick(3)" tabindex="0">
-        <span class="eco-step-num">04</span>
         <div class="eco-step-name">Dashboard</div>
         <div class="eco-step-sub">Traces · Analytics · Time Machine</div>
       </div>
@@ -677,15 +671,11 @@ footer{
         <p>A single decorator that instruments any Python function — sync or async, nested or flat. It captures inputs, outputs, token counts, latency, and parent-child span relationships automatically. Zero changes to your agent logic required.</p>
       </div>
       <div class="eco-detail" id="eco-1">
-        <h3>02 · Collector (FastAPI)</h3>
-        <p>A high-throughput FastAPI service listening on port 4318. Validates API keys, enforces payload limits, applies rate limiting, then publishes every incoming span to a Redis Stream — providing reliable backpressure and at-least-once delivery guarantees.</p>
+        <h3>02 · Oxly Engine (FastAPI)</h3>
+        <p>A high-performance single-process FastAPI service. It validates incoming spans, applies rate limits, inspects for security anomalies in real-time, computes per-model costs, and durably stores everything in a local SQLite database.</p>
       </div>
       <div class="eco-detail" id="eco-2">
-        <h3>03 · Workers</h3>
-        <p>Three independent Python processes consuming the same Redis Stream in parallel. The ClickHouse Writer durably stores every span. The Security Engine inspects for prompt injection, PII, and jailbreaks in real time. The Cost Calculator computes per-model USD spend on every call.</p>
-      </div>
-      <div class="eco-detail" id="eco-3">
-        <h3>04 · Dashboard (React + TypeScript)</h3>
+        <h3>03 · Dashboard (React + TypeScript)</h3>
         <p>A Vite-powered React 19 SPA that gives you a live trace explorer, time-series cost charts, security alert feed, and the Time Machine — a step-by-step replay of any past agent run with full span data at every node.</p>
       </div>
     </div>
